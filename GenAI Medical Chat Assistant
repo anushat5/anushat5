@@ -1,0 +1,82 @@
+# GenAI Medical Chat Assistant
+
+
+import streamlit as st
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+
+st.set_page_config(page_title="GenAI Medical Chat Assistant", layout="wide")
+
+st.title("🧠 GenAI Medical Chat Assistant")
+
+@st.cache_resource
+def load_qa_chain():
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    vectordb = FAISS.load_local("vector_store/faiss_index", embeddings)
+    qa_chain = RetrievalQA.from_chain_type(llm=OpenAI(temperature=0),
+                                           chain_type="stuff",
+                                           retriever=vectordb.as_retriever())
+    return qa_chain
+
+qa = load_qa_chain()
+
+user_query = st.text_input("Ask a medical question:")
+
+if user_query:
+    response = qa.run(user_query)
+    st.success(response)
+
+# Placeholder for FAISS or Pinecone integration
+# Will be used to store and retrieve vector embeddings of medical knowledge base
+from sentence_transformers import SentenceTransformer
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
+
+import os
+
+def load_faq_documents(faq_path="data/medical_faqs.txt"):
+    loader = TextLoader(faq_path)
+    documents = loader.load()
+    text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=20)
+    return text_splitter.split_documents(documents)
+
+def build_vector_store():
+    model_name = "sentence-transformers/all-MiniLM-L6-v2"
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+
+    docs = load_faq_documents()
+    vector_store = FAISS.from_documents(docs, embeddings)
+
+    vector_store.save_local("vector_store/faiss_index")
+    print("✅ Vector store saved.")
+
+if __name__ == "__main__":
+    build_vector_store()
+
+#requirements.txt
+streamlit
+openai
+langchain
+faiss-cpu
+sentence-transformers
+#.gitignore
+__pycache__/
+*.pyc
+.env
+vector_store/
+#data/medical_faqs.txt
+What is diabetes?
+Diabetes is a chronic health condition that affects how your body turns food into energy.
+
+What are the symptoms of COVID-19?
+Common symptoms include fever, dry cough, and tiredness. Some patients may have aches and pains, nasal congestion, sore throat or diarrhea.
+
+How do I prevent high blood pressure?
+You can prevent high blood pressure by eating a healthy diet, exercising regularly, reducing salt intake, and managing stress.
+
+What is anemia?
+Anemia is a condition in which you lack enough healthy red blood cells to carry adequate oxygen to your body’s tissues.
