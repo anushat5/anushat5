@@ -10,16 +10,6 @@
 ## 🚀 Featured Projects 
 ---
 
- 📊 Government Financial Dashboard Automation
-**Tech Stack:** Power BI, Cognos Analytics, Snowflake  
-> Designed and automated 10+ dashboards for public sector financial reports.  
-> 🕒 Reduced manual reporting effort by 80% using SQL pipelines and automated ETL flows.  
-> 👥 Used for internal reviews and state-level funding analysis.
-
-🔗 [View Repo](https://github.com/anusha-ai/govt-finance-dashboard)
-
----
-
   🩺 Diabetes Prediction MLOps Pipeline
 **Tech Stack:** Python, Docker, GitHub Actions, FastAPI, MLflow  
 > Implemented an end-to-end ML pipeline for predicting diabetes using real-world health indicators.  
